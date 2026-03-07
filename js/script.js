@@ -1,22 +1,26 @@
-const tableBody = document.getElementById("tableBody")
+const API_KEY="c081128d6f814d9191cfdab82482f7be"
 
-fetch("https://corsproxy.io/?https://api.football-data.org/v4/competitions/PL/standings",{
+const tableBody=document.getElementById("tableBody")
+const matchesContainer=document.getElementById("matchesContainer")
+const newsContainer=document.getElementById("newsContainer")
+
+const API_BASE="https://corsproxy.io/?https://api.football-data.org/v4"
+
+async function loadTable(){
+
+const res=await fetch(`${API_BASE}/competitions/PL/standings`,{
 
 headers:{
-"X-Auth-Token":"c081128d6f814d9191cfdab82482f7be"
+"X-Auth-Token":API_KEY
 }
 
 })
 
-.then(res=>res.json())
-
-.then(data=>{
-
-const standings=data.standings[0].table
+const data=await res.json()
 
 tableBody.innerHTML=""
 
-standings.forEach(team=>{
+data.standings[0].table.forEach(team=>{
 
 tableBody.innerHTML+=`
 
@@ -44,23 +48,19 @@ ${team.team.name}
 
 })
 
-})
+}
 
+async function loadMatches(){
 
-
-const matchesContainer=document.getElementById("matchesContainer")
-
-fetch("https://corsproxy.io/?https://api.football-data.org/v4/competitions/PL/matches",{
+const res=await fetch(`${API_BASE}/competitions/PL/matches`,{
 
 headers:{
-"X-Auth-Token":"c081128d6f814d9191cfdab82482f7be"
+"X-Auth-Token":API_KEY
 }
 
 })
 
-.then(res=>res.json())
-
-.then(data=>{
+const data=await res.json()
 
 matchesContainer.innerHTML=""
 
@@ -96,27 +96,39 @@ ${match.awayTeam.name}
 
 })
 
-})
+}
 
+function loadNews(){
 
+const news=[
 
-const newsContainer=document.getElementById("newsContainer")
+{
+title:"Arsenal extend lead at the top",
+desc:"Arsenal continue strong form in the Premier League."
+},
 
-fetch("https://newsapi.org/v2/everything?q=premier%20league&apiKey=demo")
+{
+title:"Manchester City chase title",
+desc:"City keep pressure on top teams."
+},
 
-.then(res=>res.json())
+{
+title:"Liverpool secure big win",
+desc:"Liverpool dominate match with strong performance."
+}
 
-.then(data=>{
+]
 
-data.articles.slice(0,4).forEach(article=>{
+newsContainer.innerHTML=""
+
+news.forEach(n=>{
 
 newsContainer.innerHTML+=`
 
 <div class="news-card">
 
-<h3>${article.title}</h3>
-
-<p>${article.description ?? ""}</p>
+<h3>${n.title}</h3>
+<p>${n.desc}</p>
 
 </div>
 
@@ -124,4 +136,8 @@ newsContainer.innerHTML+=`
 
 })
 
-})
+}
+
+loadTable()
+loadMatches()
+loadNews()
