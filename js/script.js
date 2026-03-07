@@ -66,6 +66,7 @@ const res=await fetch(`${API_BASE}/competitions/PL/matches`,{
 
 headers:{
 "X-Auth-Token":API_KEY
+
 }
 
 })
@@ -74,21 +75,51 @@ const data=await res.json()
 
 matchesContainer.innerHTML=""
 
-data.matches.slice(0,10).forEach(match=>{
+let currentMatchday=null
+
+data.matches.forEach(match=>{
+
+if(match.matchday!==currentMatchday){
+
+currentMatchday=match.matchday
+
+matchesContainer.innerHTML+=`
+
+<div class="matchday">
+
+Matchday ${currentMatchday} of 38
+
+</div>
+
+`
+
+}
+
+let homeScore=match.score.fullTime.home
+let awayScore=match.score.fullTime.away
+
+let homeClass=""
+let awayClass=""
+
+if(homeScore>awayScore){
+
+homeClass="winner"
+awayClass="loser"
+
+}
+
+if(awayScore>homeScore){
+
+awayClass="winner"
+homeClass="loser"
+
+}
 
 let status=""
 
-if(match.status==="FINISHED"){
-status="FT"
-}
-
-if(match.status==="SCHEDULED"){
-status="Upcoming"
-}
-
-if(match.status==="IN_PLAY"){
-status="LIVE"
-}
+if(match.status==="FINISHED") status="FT"
+if(match.status==="IN_PLAY") status="LIVE"
+if(match.status==="SCHEDULED") status="Upcoming"
 
 let date=new Date(match.utcDate)
 
@@ -104,24 +135,30 @@ matchesContainer.innerHTML+=`
 
 <div class="match-teams">
 
-<div class="team-row">
+<div class="team-row ${homeClass}">
 
 <img src="${match.homeTeam.crest}">
+
 ${match.homeTeam.name}
 
 <span class="match-score">
-${match.score.fullTime.home ?? "-"}
+
+${homeScore ?? "-"}
+
 </span>
 
 </div>
 
-<div class="team-row">
+<div class="team-row ${awayClass}">
 
 <img src="${match.awayTeam.crest}">
+
 ${match.awayTeam.name}
 
 <span class="match-score">
-${match.score.fullTime.away ?? "-"}
+
+${awayScore ?? "-"}
+
 </span>
 
 </div>
@@ -131,6 +168,7 @@ ${match.score.fullTime.away ?? "-"}
 <div class="match-info">
 
 <div>${status}</div>
+
 <div>${dateText}</div>
 
 </div>
@@ -141,8 +179,9 @@ ${match.score.fullTime.away ?? "-"}
 
 })
 
-
 }
+
+
 
 function loadNews(){
 
