@@ -41,6 +41,13 @@ justify-content:space-between;
 align-items:center;
 padding:12px;
 border-bottom:1px solid #eee;
+transition:0.2s;
+}
+
+.match:hover{
+
+background:#f5f5f5;
+
 }
 
 .team{
@@ -80,4 +87,21 @@ padding:20px;
 border-radius:15px;
 margin-bottom:15px;
 box-shadow:0 2px 10px rgba(0,0,0,0.05);
+}
+
+.top4{
+background:#e8f5e9;
+}
+
+.relegation{
+background:#ffebee;
+}
+
+.status{
+
+font-size:12px;
+background:#eee;
+padding:3px 8px;
+border-radius:10px;
+
 }

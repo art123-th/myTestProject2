@@ -22,9 +22,33 @@ tableBody.innerHTML=""
 
 data.standings[0].table.forEach(team=>{
 
+let rowClass=""
+
+if(team.position<=4){
+rowClass="top4"
+}
+
+if(team.position>=18){
+rowClass="relegation"
+}
+
+let status=match.status
+
+if(status==="FINISHED"){
+status="FT"
+}
+
+if(status==="IN_PLAY"){
+status="LIVE"
+}
+
+if(status==="SCHEDULED"){
+status="Upcoming"
+}
+
 tableBody.innerHTML+=`
 
-<tr>
+<tr class="${rowClass}">
 
 <td>${team.position}</td>
 
@@ -76,6 +100,8 @@ matchesContainer.innerHTML+=`
 ${match.homeTeam.name}
 
 </div>
+
+<div class="status">${status}</div>
 
 <div>
 
