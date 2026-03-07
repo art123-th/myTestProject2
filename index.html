@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Football Hub</title>
+<title>Premier League Hub</title>
 
 <link rel="stylesheet" href="css/styles.css">
 
@@ -16,48 +16,38 @@
 
 <header>
 
-<h1>⚽ Football Hub</h1>
-<button id="themeBtn">Dark Mode</button>
+<h1>⚽ Premier League</h1>
 
-</header>
+<div class="tabs">
 
-<nav>
-
-<a href="#">Home</a>
-<a href="#news">News</a>
-<a href="#matches">Matches</a>
-
-</nav>
-
-<main>
-
-<section id="news">
-
-<h2>Latest Football News</h2>
-
-<div id="newsContainer" class="news-grid">
-
-Loading news...
+<button>Overview</button>
+<button>Matches</button>
+<button>Table</button>
+<button>Stats</button>
+<button>Players</button>
 
 </div>
 
-</section>
+</header>
 
-<section id="matches">
+<main class="layout">
 
-<h2>Upcoming Matches</h2>
+<div class="matches">
 
-<div id="matchesContainer" class="news-grid">
+<h2>Matches</h2>
+
+<div id="matchesContainer">
 
 Loading matches...
 
 </div>
 
-</section>
+</div>
 
-<section>
 
-<h2>League Table</h2>
+<div class="table">
+
+<h2>Table</h2>
 
 <table>
 
@@ -65,9 +55,13 @@ Loading matches...
 
 <tr>
 <th>#</th>
-<th>Team</th>
-<th>Points</th>
-
+<th>Club</th>
+<th>MP</th>
+<th>W</th>
+<th>D</th>
+<th>L</th>
+<th>GD</th>
+<th>Pts</th>
 </tr>
 
 </thead>
@@ -75,22 +69,24 @@ Loading matches...
 <tbody id="tableBody">
 
 <tr>
-<td colspan="3">Loading table...</td>
+<td colspan="8">Loading table...</td>
 </tr>
 
 </tbody>
 
 </table>
 
-</section>
+</div>
 
 </main>
 
-<footer>
+<section class="news">
 
-<p>⚽ Football Hub 2026</p>
+<h2>Latest News</h2>
 
-</footer>
+<div id="newsContainer"></div>
+
+</section>
 
 <script src="js/script.js"></script>
 
