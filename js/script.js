@@ -60,79 +60,94 @@ ${team.team.name}
 
 }
 
-async function loadMatches() {
+async function loadMatches(){
 
-const url = "https://site.api.espn.com/apis/v2/sports/soccer/eng.1/scoreboard";
+const url="https://site.api.espn.com/apis/v2/sports/soccer/eng.1/scoreboard";
 
-const res = await fetch(url);
-const data = await res.json();
+try{
 
-const matches = data.events;
+const res=await fetch(url);
+const data=await res.json();
 
-let grouped = {};
+const matches=data.events;
 
-// จัดกลุ่ม matchday
-matches.forEach(match => {
+let grouped={};
 
-const week = match.week.number;
+matches.forEach(match=>{
 
-if(!grouped[week]) grouped[week] = [];
+const week = match.week ? match.week.number : 0;
+
+if(!grouped[week]){
+grouped[week]=[];
+}
 
 grouped[week].push(match);
 
 });
 
-const matchdays = Object.keys(grouped).map(Number);
+const matchdays=Object.keys(grouped).map(Number);
 
-const latest = Math.max(...matchdays);
-const previous = latest - 1;
+const latest=Math.max(...matchdays);
+const previous=latest-1;
 
-const show = [latest, previous];
+matchesContainer.innerHTML="";
 
-const container = document.getElementById("matchesContainer");
-
-container.innerHTML = "";
-
-show.forEach(day => {
+[latest,previous].forEach(day=>{
 
 if(!grouped[day]) return;
 
-let html = `<h3>Matchday ${day} of 38</h3>`;
+matchesContainer.innerHTML+=`
+<div class="matchday">
+Matchday ${day} of 38
+</div>
+`;
 
-grouped[day].forEach(match => {
+grouped[day].forEach(match=>{
 
-const home = match.competitions[0].competitors[0];
-const away = match.competitions[0].competitors[1];
+const home=match.competitions[0].competitors[0];
+const away=match.competitions[0].competitors[1];
 
-html += `
-<div class="match">
+matchesContainer.innerHTML+=`
 
-<div class="team">
-<img src="${home.team.logo}" width="24">
+<div class="match-card">
+
+<div class="match-teams">
+
+<div class="team-row">
+<img src="${home.team.logo}">
 ${home.team.displayName}
 </div>
 
-<div class="score">
-${home.score} - ${away.score}
-</div>
-
-<div class="team">
-<img src="${away.team.logo}" width="24">
+<div class="team-row">
+<img src="${away.team.logo}">
 ${away.team.displayName}
 </div>
 
 </div>
+
+<div class="match-score">
+${home.score} - ${away.score}
+</div>
+
+</div>
+
 `;
 
 });
 
-container.innerHTML += html;
-
 });
+
+}catch(err){
+
+matchesContainer.innerHTML="Failed to load matches";
+
+console.error(err);
 
 }
 
-loadMatches();
+}
+
+
 
 function loadNews(){
 
