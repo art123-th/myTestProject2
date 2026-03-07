@@ -77,31 +77,27 @@ const matches=data.matches
 // หา matchday ล่าสุด
 let latestMatchday=Math.max(...matches.map(m=>m.matchday))
 
-// เอาอีก matchday ก่อนหน้า
-let previousMatchday=latestMatchday-1
-
-let filteredMatches=matches.filter(match=>
-match.matchday===latestMatchday ||
-match.matchday===previousMatchday
+// เอาเฉพาะ matchday ล่าสุด + เตะจบแล้ว
+let latestMatches=matches.filter(match=>
+match.matchday===latestMatchday &&
+match.status==="FINISHED"
 )
 
-let currentMatchday=null
+// เรียงจากล่าสุด
+latestMatches.sort((a,b)=> new Date(b.utcDate)-new Date(a.utcDate))
 
-filteredMatches.forEach(match=>{
-
-if(match.matchday!==currentMatchday){
-
-currentMatchday=match.matchday
+// เอาแค่ 2 นัดล่าสุด
+let twoMatches=latestMatches.slice(0,2)
 
 matchesContainer.innerHTML+=`
 
 <div class="matchday">
-Matchday ${currentMatchday} of 38
+Matchday ${latestMatchday} of 38
 </div>
 
 `
 
-}
+twoMatches.forEach(match=>{
 
 let homeScore=match.score.fullTime.home
 let awayScore=match.score.fullTime.away
@@ -118,12 +114,6 @@ if(awayScore>homeScore){
 awayClass="winner"
 homeClass="loser"
 }
-
-let status=""
-
-if(match.status==="FINISHED") status="FT"
-if(match.status==="IN_PLAY") status="LIVE"
-if(match.status==="SCHEDULED") status="Upcoming"
 
 let date=new Date(match.utcDate)
 
@@ -142,19 +132,19 @@ matchesContainer.innerHTML+=`
 <div class="team-row ${homeClass}">
 <img src="${match.homeTeam.crest}">
 ${match.homeTeam.name}
-<span class="match-score">${homeScore ?? "-"}</span>
+<span class="match-score">${homeScore}</span>
 </div>
 
 <div class="team-row ${awayClass}">
 <img src="${match.awayTeam.crest}">
 ${match.awayTeam.name}
-<span class="match-score">${awayScore ?? "-"}</span>
+<span class="match-score">${awayScore}</span>
 </div>
 
 </div>
 
 <div class="match-info">
-<div>${status}</div>
+<div>FT</div>
 <div>${dateText}</div>
 </div>
 
@@ -165,8 +155,6 @@ ${match.awayTeam.name}
 })
 
 }
-
-
 
 function loadNews(){
 
