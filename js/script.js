@@ -62,22 +62,32 @@ ${team.team.name}
 
 async function loadMatches(){
 
-const res=await fetch(`${API_BASE}/competitions/PL/matches`,{
-
+const res = await fetch(`${API_BASE}/competitions/PL/matches`,{
 headers:{
 "X-Auth-Token":API_KEY
-
 }
-
 })
 
-const data=await res.json()
+const data = await res.json()
 
 matchesContainer.innerHTML=""
 
+const matches=data.matches
+
+// หา matchday ล่าสุด
+let latestMatchday=Math.max(...matches.map(m=>m.matchday))
+
+// เอาอีก matchday ก่อนหน้า
+let previousMatchday=latestMatchday-1
+
+let filteredMatches=matches.filter(match=>
+match.matchday===latestMatchday ||
+match.matchday===previousMatchday
+)
+
 let currentMatchday=null
 
-data.matches.forEach(match=>{
+filteredMatches.forEach(match=>{
 
 if(match.matchday!==currentMatchday){
 
@@ -86,9 +96,7 @@ currentMatchday=match.matchday
 matchesContainer.innerHTML+=`
 
 <div class="matchday">
-
 Matchday ${currentMatchday} of 38
-
 </div>
 
 `
@@ -102,17 +110,13 @@ let homeClass=""
 let awayClass=""
 
 if(homeScore>awayScore){
-
 homeClass="winner"
 awayClass="loser"
-
 }
 
 if(awayScore>homeScore){
-
 awayClass="winner"
 homeClass="loser"
-
 }
 
 let status=""
@@ -136,41 +140,22 @@ matchesContainer.innerHTML+=`
 <div class="match-teams">
 
 <div class="team-row ${homeClass}">
-
 <img src="${match.homeTeam.crest}">
-
 ${match.homeTeam.name}
-
-<span class="match-score">
-
-${homeScore ?? "-"}
-
-</span>
-
+<span class="match-score">${homeScore ?? "-"}</span>
 </div>
 
 <div class="team-row ${awayClass}">
-
 <img src="${match.awayTeam.crest}">
-
 ${match.awayTeam.name}
-
-<span class="match-score">
-
-${awayScore ?? "-"}
-
-</span>
-
+<span class="match-score">${awayScore ?? "-"}</span>
 </div>
 
 </div>
 
 <div class="match-info">
-
 <div>${status}</div>
-
 <div>${dateText}</div>
-
 </div>
 
 </div>
