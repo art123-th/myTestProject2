@@ -60,100 +60,79 @@ ${team.team.name}
 
 }
 
-async function loadMatches(){
+async function loadMatches() {
 
-const res = await fetch(`${API_BASE}/competitions/PL/matches`,{
-headers:{
-"X-Auth-Token":API_KEY
-}
-})
+const url = "https://site.api.espn.com/apis/v2/sports/soccer/eng.1/scoreboard";
 
-const data = await res.json()
+const res = await fetch(url);
+const data = await res.json();
 
-matchesContainer.innerHTML=""
+const matches = data.events;
 
-const matches=data.matches
+let grouped = {};
 
-// หา matchday ล่าสุดที่มี FINISHED
-let finishedMatches=matches.filter(m=>m.status==="FINISHED")
+// จัดกลุ่ม matchday
+matches.forEach(match => {
 
-let latestMatchday=Math.max(...finishedMatches.map(m=>m.matchday))
+const week = match.week.number;
 
-// เอา matchday นั้น
-let latestMatches=finishedMatches.filter(m=>m.matchday===latestMatchday)
+if(!grouped[week]) grouped[week] = [];
 
-// เรียงตามเวลา
-latestMatches.sort((a,b)=> new Date(b.utcDate)-new Date(a.utcDate))
+grouped[week].push(match);
 
-// เอาแค่ 2 นัดล่าสุด
-let twoMatches=latestMatches.slice(0,2)
+});
 
-matchesContainer.innerHTML+=`
+const matchdays = Object.keys(grouped).map(Number);
 
-<div class="matchday">
-Matchday ${latestMatchday} of 38
+const latest = Math.max(...matchdays);
+const previous = latest - 1;
+
+const show = [latest, previous];
+
+const container = document.getElementById("matchesContainer");
+
+container.innerHTML = "";
+
+show.forEach(day => {
+
+if(!grouped[day]) return;
+
+let html = `<h3>Matchday ${day} of 38</h3>`;
+
+grouped[day].forEach(match => {
+
+const home = match.competitions[0].competitors[0];
+const away = match.competitions[0].competitors[1];
+
+html += `
+<div class="match">
+
+<div class="team">
+<img src="${home.team.logo}" width="24">
+${home.team.displayName}
 </div>
 
-`
-
-twoMatches.forEach(match=>{
-
-let homeScore=match.score.fullTime.home
-let awayScore=match.score.fullTime.away
-
-let homeClass=""
-let awayClass=""
-
-if(homeScore>awayScore){
-homeClass="winner"
-awayClass="loser"
-}
-
-if(awayScore>homeScore){
-awayClass="winner"
-homeClass="loser"
-}
-
-let date=new Date(match.utcDate)
-
-let dateText=date.toLocaleDateString("en-US",{
-weekday:"short",
-month:"short",
-day:"numeric"
-})
-
-matchesContainer.innerHTML+=`
-
-<div class="match-card">
-
-<div class="match-teams">
-
-<div class="team-row ${homeClass}">
-<img src="${match.homeTeam.crest}">
-${match.homeTeam.name}
-<span class="match-score">${homeScore}</span>
+<div class="score">
+${home.score} - ${away.score}
 </div>
 
-<div class="team-row ${awayClass}">
-<img src="${match.awayTeam.crest}">
-${match.awayTeam.name}
-<span class="match-score">${awayScore}</span>
+<div class="team">
+<img src="${away.team.logo}" width="24">
+${away.team.displayName}
 </div>
 
 </div>
+`;
 
-<div class="match-info">
-<div>FT</div>
-<div>${dateText}</div>
-</div>
+});
 
-</div>
+container.innerHTML += html;
 
-`
-
-})
+});
 
 }
+
+loadMatches();
 
 function loadNews(){
 
