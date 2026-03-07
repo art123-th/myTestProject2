@@ -1,9 +1,9 @@
 const tableBody = document.getElementById("tableBody")
 
-fetch("https://api.football-data.org/v4/competitions/PL/standings",{
+fetch("https://corsproxy.io/?https://api.football-data.org/v4/competitions/PL/standings",{
 
 headers:{
-"X-Auth-Token":"YOUR_API_KEY"
+"X-Auth-Token":"c081128d6f814d9191cfdab82482f7be"
 }
 
 })
@@ -50,7 +50,7 @@ ${team.team.name}
 
 const matchesContainer=document.getElementById("matchesContainer")
 
-fetch("https://api.football-data.org/v4/competitions/PL/matches",{
+fetch("https://corsproxy.io/?https://api.football-data.org/v4/competitions/PL/matches",{
 
 headers:{
 "X-Auth-Token":"c081128d6f814d9191cfdab82482f7be"
