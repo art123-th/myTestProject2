@@ -74,16 +74,15 @@ matchesContainer.innerHTML=""
 
 const matches=data.matches
 
-// หา matchday ล่าสุด
-let latestMatchday=Math.max(...matches.map(m=>m.matchday))
+// หา matchday ล่าสุดที่มี FINISHED
+let finishedMatches=matches.filter(m=>m.status==="FINISHED")
 
-// เอาเฉพาะ matchday ล่าสุด + เตะจบแล้ว
-let latestMatches=matches.filter(match=>
-match.matchday===latestMatchday &&
-match.status==="FINISHED"
-)
+let latestMatchday=Math.max(...finishedMatches.map(m=>m.matchday))
 
-// เรียงจากล่าสุด
+// เอา matchday นั้น
+let latestMatches=finishedMatches.filter(m=>m.matchday===latestMatchday)
+
+// เรียงตามเวลา
 latestMatches.sort((a,b)=> new Date(b.utcDate)-new Date(a.utcDate))
 
 // เอาแค่ 2 นัดล่าสุด
