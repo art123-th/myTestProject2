@@ -62,7 +62,7 @@ ${team.team.name}
 
 async function loadMatches(){
 
-const url="https://site.api.espn.com/apis/v2/sports/soccer/eng.1/scoreboard";
+const url="https://corsproxy.io/?https://site.api.espn.com/apis/v2/sports/soccer/eng.1/scoreboard";
 
 try{
 
@@ -75,7 +75,7 @@ let grouped={};
 
 matches.forEach(match=>{
 
-const week = match.week ? match.week.number : 0;
+const week=match.week ? match.week.number : 0;
 
 if(!grouped[week]){
 grouped[week]=[];
