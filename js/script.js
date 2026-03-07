@@ -1,10 +1,10 @@
 const API_KEY="c081128d6f814d9191cfdab82482f7be"
 
+const API_BASE="https://corsproxy.io/?https://api.football-data.org/v4"
+
 const tableBody=document.getElementById("tableBody")
 const matchesContainer=document.getElementById("matchesContainer")
 const newsContainer=document.getElementById("newsContainer")
-
-const API_BASE="https://corsproxy.io/?https://api.football-data.org/v4"
 
 async function loadTable(){
 
@@ -30,20 +30,6 @@ rowClass="top4"
 
 if(team.position>=18){
 rowClass="relegation"
-}
-
-let status=match.status
-
-if(status==="FINISHED"){
-status="FT"
-}
-
-if(status==="IN_PLAY"){
-status="LIVE"
-}
-
-if(status==="SCHEDULED"){
-status="Upcoming"
 }
 
 tableBody.innerHTML+=`
@@ -90,6 +76,20 @@ matchesContainer.innerHTML=""
 
 data.matches.slice(0,8).forEach(match=>{
 
+let status=match.status
+
+if(status==="FINISHED"){
+status="FT"
+}
+
+if(status==="IN_PLAY"){
+status="LIVE"
+}
+
+if(status==="SCHEDULED"){
+status="Upcoming"
+}
+
 matchesContainer.innerHTML+=`
 
 <div class="match">
@@ -101,11 +101,11 @@ ${match.homeTeam.name}
 
 </div>
 
-<div class="status">${status}</div>
-
 <div>
 
 ${match.score.fullTime.home ?? "-"} : ${match.score.fullTime.away ?? "-"}
+
+<div class="status">${status}</div>
 
 </div>
 
@@ -129,18 +129,23 @@ function loadNews(){
 const news=[
 
 {
-title:"Arsenal extend lead at the top",
-desc:"Arsenal continue strong form in the Premier League."
+title:"Arsenal continue strong title race",
+desc:"Arsenal maintain top position in the league."
 },
 
 {
-title:"Manchester City chase title",
-desc:"City keep pressure on top teams."
+title:"Manchester City push for comeback",
+desc:"City keep chasing the league leaders."
 },
 
 {
-title:"Liverpool secure big win",
-desc:"Liverpool dominate match with strong performance."
+title:"Liverpool dominate latest match",
+desc:"Liverpool win with impressive performance."
+},
+
+{
+title:"Tottenham battle for top four",
+desc:"Spurs keep pressure on Champions League spots."
 }
 
 ]
