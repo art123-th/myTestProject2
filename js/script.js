@@ -74,45 +74,64 @@ const data=await res.json()
 
 matchesContainer.innerHTML=""
 
-data.matches.slice(0,8).forEach(match=>{
+data.matches.slice(0,10).forEach(match=>{
 
-let status=match.status
+let status=""
 
-if(status==="FINISHED"){
+if(match.status==="FINISHED"){
 status="FT"
 }
 
-if(status==="IN_PLAY"){
-status="LIVE"
-}
-
-if(status==="SCHEDULED"){
+if(match.status==="SCHEDULED"){
 status="Upcoming"
 }
 
+if(match.status==="IN_PLAY"){
+status="LIVE"
+}
+
+let date=new Date(match.utcDate)
+
+let dateText=date.toLocaleDateString("en-US",{
+weekday:"short",
+month:"short",
+day:"numeric"
+})
+
 matchesContainer.innerHTML+=`
 
-<div class="match">
+<div class="match-card">
 
-<div class="team">
+<div class="match-teams">
+
+<div class="team-row">
 
 <img src="${match.homeTeam.crest}">
 ${match.homeTeam.name}
 
-</div>
-
-<div>
-
-${match.score.fullTime.home ?? "-"} : ${match.score.fullTime.away ?? "-"}
-
-<div class="status">${status}</div>
+<span class="match-score">
+${match.score.fullTime.home ?? "-"}
+</span>
 
 </div>
 
-<div class="team">
+<div class="team-row">
 
 <img src="${match.awayTeam.crest}">
 ${match.awayTeam.name}
+
+<span class="match-score">
+${match.score.fullTime.away ?? "-"}
+</span>
+
+</div>
+
+</div>
+
+<div class="match-info">
+
+<div>${status}</div>
+<div>${dateText}</div>
 
 </div>
 
@@ -121,6 +140,7 @@ ${match.awayTeam.name}
 `
 
 })
+
 
 }
 
