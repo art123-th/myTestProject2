@@ -87,3 +87,46 @@ btn.onclick=()=>{
 document.body.classList.toggle("dark")
 
 }
+const tableBody = document.getElementById("tableBody")
+
+fetch("https://api.football-data.org/v4/competitions/PL/standings",{
+
+headers:{
+"X-Auth-Token":"c081128d6f814d9191cfdab82482f7be"
+}
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+const standings=data.standings[0].table
+
+tableBody.innerHTML=""
+
+standings.forEach(team=>{
+
+tableBody.innerHTML+=`
+
+<tr>
+
+<td>${team.position}</td>
+
+<td style="display:flex;align-items:center;gap:10px;">
+
+<img src="${team.team.crest}" width="25">
+
+${team.team.name}
+
+</td>
+
+<td>${team.points}</td>
+
+</tr>
+
+`
+
+})
+
+})
