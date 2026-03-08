@@ -1,93 +1,683 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Premier League Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── Variables ── */
+    :root {
+      --bg:        #0d0f12;
+      --bg2:       #141720;
+      --bg3:       #1b1f2b;
+      --border:    rgba(255,255,255,0.07);
+      --accent:    #37003c;
+      --pl-purple: #37003c;
+      --pl-green:  #00ff87;
+      --pl-teal:   #04f5ff;
+      --text:      #e8eaf2;
+      --muted:     #6b7280;
+      --top4:      rgba(0,255,135,0.08);
+      --rel:       rgba(255,80,80,0.08);
+      --top4-bar:  #00ff87;
+      --rel-bar:   #ff5050;
+      --radius:    14px;
+      --font-head: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<title>Premier League Hub</title>
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-<link rel="stylesheet" href="css/styles.css">
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 999; opacity: 0.4;
+    }
 
+    /* ── Header ── */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 40px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 14px;
+    }
+
+    .logo-badge {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--pl-purple), #6c009e);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 20px rgba(55,0,60,0.6);
+    }
+
+    .logo h1 {
+      font-family: var(--font-head);
+      font-size: 28px;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, var(--pl-green), var(--pl-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .logo span {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      -webkit-text-fill-color: var(--muted);
+    }
+
+    /* ── Nav tabs ── */
+    .tabs {
+      display: flex; gap: 4px;
+      background: var(--bg3);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .tabs button {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+
+    .tabs button:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .tabs button.active {
+      background: linear-gradient(135deg, var(--pl-purple), #6c009e);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(55,0,60,0.5);
+    }
+
+    /* ── Season badge ── */
+    .season-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--pl-green);
+      background: rgba(0,255,135,0.08);
+      border: 1px solid rgba(0,255,135,0.2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Main layout ── */
+    main.layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      padding: 30px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── Section cards ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-header h2 {
+      font-family: var(--font-head);
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--text);
+    }
+
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .badge-live { background: rgba(255,80,80,0.15); color: #ff5050; border: 1px solid rgba(255,80,80,0.3); }
+    .badge-live::before { content: '●  '; animation: blink 1.2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .badge-info { background: rgba(4,245,255,0.08); color: var(--pl-teal); border: 1px solid rgba(4,245,255,0.2); }
+
+    /* ── Matchday header ── */
+    .matchday-label {
+      padding: 10px 20px;
+      background: var(--bg3);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--pl-green);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Match cards ── */
+    .matches-grid {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .match-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .match-card:hover { background: rgba(255,255,255,0.03); }
+    .match-card:last-child { border-bottom: none; }
+
+    .match-teams {
+      display: flex; flex-direction: column; gap: 8px;
+      flex: 1;
+    }
+
+    .team-row {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 400;
+    }
+
+    .team-row img { width: 22px; height: 22px; object-fit: contain; }
+    .team-row.winner { font-weight: 600; color: #fff; }
+    .team-row.loser { color: var(--muted); }
+
+    .match-score-block {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      min-width: 50px;
+    }
+
+    .score-pair {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+    }
+
+    .score-num {
+      font-family: var(--font-mono);
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1;
+      width: 22px; text-align: center;
+    }
+
+    .match-status {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .match-status.live { color: #ff5050; }
+
+    /* ── Standings table ── */
+    .table-card { animation-delay: 0.1s; }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead tr { border-bottom: 1px solid var(--border); }
+
+    th {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    th:nth-child(2) { text-align: left; padding-left: 12px; }
+
+    td {
+      font-size: 13px;
+      font-weight: 400;
+      padding: 11px 10px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+
+    td:nth-child(2) {
+      text-align: left;
+      padding-left: 0;
+    }
+
+    tbody tr:hover td { background: rgba(255,255,255,0.03); }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* Position colors */
+    tr.top4 td { background: var(--top4); }
+    tr.top4 td:first-child { border-left: 3px solid var(--top4-bar); }
+    tr.relegation td { background: var(--rel); }
+    tr.relegation td:first-child { border-left: 3px solid var(--rel-bar); }
+
+    .pos-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .team-cell {
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .team-cell img { width: 20px; height: 20px; object-fit: contain; }
+
+    .team-name { font-size: 13px; font-weight: 500; color: var(--text); }
+
+    .pts-cell {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--pl-green);
+    }
+
+    /* ── Legend ── */
+    .table-legend {
+      display: flex; gap: 16px;
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .legend-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+
+    /* ── News section ── */
+    .news-section {
+      padding: 0 40px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+
+    .news-section .card-header {
+      padding: 18px 0 14px;
+      border-bottom: none;
+      margin-bottom: 16px;
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .news-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .news-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--pl-green), var(--pl-teal));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s;
+    }
+
+    .news-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+    .news-card:hover::before { transform: scaleX(1); }
+
+    .news-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--pl-teal);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .news-card h3 {
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .news-card p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    /* ── Loading state ── */
+    .loading {
+      display: flex; align-items: center; gap: 10px;
+      padding: 30px 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--pl-green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2a2f40; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      main.layout { grid-template-columns: 1fr; padding: 20px; }
+      .news-grid { grid-template-columns: 1fr 1fr; }
+      header { padding: 14px 20px; }
+      .season-badge { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      .tabs button { padding: 7px 12px; font-size: 12px; }
+      .news-grid { grid-template-columns: 1fr; }
+      .news-section { padding: 0 20px 30px; }
+    }
+  </style>
 </head>
-
 <body>
 
+<!-- ── Header ── -->
 <header>
+  <div class="logo">
+    <div class="logo-badge">⚽</div>
+    <div>
+      <h1>Premier League</h1>
+      <span>Hub</span>
+    </div>
+  </div>
 
-<h1>⚽ Premier League</h1>
+  <nav class="tabs">
+    <button class="active">Overview</button>
+    <button>Matches</button>
+    <button>Table</button>
+    <button>Stats</button>
+    <button>Players</button>
+  </nav>
 
-<div class="tabs">
-<button>Overview</button>
-<button>Matches</button>
-<button>Table</button>
-<button>Stats</button>
-<button>Players</button>
-</div>
-
+  <div class="season-badge">2024 / 25</div>
 </header>
 
-
+<!-- ── Main ── -->
 <main class="layout">
 
-<div class="matches">
+  <!-- Matches -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Matches</h2>
+      <span class="badge badge-live">Live</span>
+    </div>
+    <div id="matchesContainer" class="matches-grid">
+      <div class="loading"><div class="spinner"></div> Loading matches…</div>
+    </div>
+  </div>
 
-<h2>Matches</h2>
-
-<div id="matchesContainer" class="matches-grid">
-Loading matches...
-</div>
-
-</div>
-
-
-<div class="table">
-
-<h2>Table</h2>
-
-<table>
-
-<thead>
-
-<tr>
-<th>#</th>
-<th>Club</th>
-<th>MP</th>
-<th>W</th>
-<th>D</th>
-<th>L</th>
-<th>GD</th>
-<th>Pts</th>
-</tr>
-
-</thead>
-
-<tbody id="tableBody">
-
-<tr>
-<td colspan="8">Loading table...</td>
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
+  <!-- Table -->
+  <div class="card table-card">
+    <div class="card-header">
+      <h2>Standings</h2>
+      <span class="badge badge-info">2024–25</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Club</th>
+          <th>MP</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>GD</th>
+          <th>Pts</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="8"><div class="loading"><div class="spinner"></div> Loading table…</div></td></tr>
+      </tbody>
+    </table>
+    <div class="table-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--top4-bar)"></div> Champions League</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--rel-bar)"></div> Relegation</div>
+    </div>
+  </div>
 
 </main>
 
-
-<section class="news">
-
-<h2>Latest News</h2>
-
-<div id="newsContainer"></div>
-
+<!-- ── News ── -->
+<section class="news-section">
+  <div class="card-header">
+    <h2 style="font-family:var(--font-head);font-size:22px;letter-spacing:2px;">Latest News</h2>
+    <span class="badge badge-info">Today</span>
+  </div>
+  <div id="newsContainer" class="news-grid"></div>
 </section>
 
-<script src="js/script.js"></script>
+<script>
+  const API_KEY  = 'c081128d6f814d9191cfdab82482f7be';
+  const API_BASE = 'https://corsproxy.io/?https://api.football-data.org/v4';
 
+  const tableBody       = document.getElementById('tableBody');
+  const matchesContainer = document.getElementById('matchesContainer');
+  const newsContainer   = document.getElementById('newsContainer');
+
+  /* ── Tab switching ── */
+  document.querySelectorAll('.tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  /* ── Standings ── */
+  async function loadTable() {
+    try {
+      const res  = await fetch(`${API_BASE}/competitions/PL/standings`, {
+        headers: { 'X-Auth-Token': API_KEY }
+      });
+      const data = await res.json();
+      const rows = data.standings[0].table;
+
+      tableBody.innerHTML = rows.map(team => {
+        const cls = team.position <= 4 ? 'top4' : team.position >= 18 ? 'relegation' : '';
+        return `
+          <tr class="${cls}">
+            <td><span class="pos-num">${team.position}</span></td>
+            <td>
+              <div class="team-cell">
+                <img src="${team.team.crest}" alt="${team.team.shortName}">
+                <span class="team-name">${team.team.shortName || team.team.name}</span>
+              </div>
+            </td>
+            <td>${team.playedGames}</td>
+            <td>${team.won}</td>
+            <td>${team.draw}</td>
+            <td>${team.lost}</td>
+            <td>${team.goalDifference > 0 ? '+' : ''}${team.goalDifference}</td>
+            <td class="pts-cell">${team.points}</td>
+          </tr>`;
+      }).join('');
+    } catch (err) {
+      tableBody.innerHTML = `<tr><td colspan="8" style="padding:20px;color:var(--muted);font-size:13px;">⚠ Failed to load standings</td></tr>`;
+      console.error(err);
+    }
+  }
+
+  /* ── Matches ── */
+  async function loadMatches() {
+    try {
+      // ใช้ football-data.org เหมือนกับ Standings (ไม่ต้องผ่าน corsproxy)
+      const res  = await fetch(`${API_BASE}/competitions/PL/matches?status=FINISHED&limit=20`, {
+        headers: { 'X-Auth-Token': API_KEY }
+      });
+      const data = await res.json();
+
+      if (!data.matches || data.matches.length === 0) {
+        matchesContainer.innerHTML = `<div class="loading" style="color:var(--muted)">ไม่พบข้อมูลแมตช์ครับ</div>`;
+        return;
+      }
+
+      // จัดกลุ่มตาม matchday
+      const grouped = {};
+      data.matches.forEach(match => {
+        const day = match.matchday ?? 0;
+        (grouped[day] = grouped[day] || []).push(match);
+      });
+
+      const matchdays = Object.keys(grouped).map(Number).sort((a, b) => b - a);
+      const latest    = matchdays[0];
+      const previous  = matchdays[1];
+
+      matchesContainer.innerHTML = '';
+
+      [latest, previous].forEach(day => {
+        if (!grouped[day]) return;
+
+        matchesContainer.innerHTML += `<div class="matchday-label">Matchday ${day} &nbsp;·&nbsp; 2024–25</div>`;
+
+        grouped[day].forEach(match => {
+          const hScore  = match.score?.fullTime?.home ?? null;
+          const aScore  = match.score?.fullTime?.away ?? null;
+          const status  = match.status === 'IN_PLAY' ? 'LIVE'
+                        : match.status === 'FINISHED' ? 'FT'
+                        : match.status === 'TIMED'    ? formatKickoff(match.utcDate)
+                        : match.status;
+          const isLive  = match.status === 'IN_PLAY';
+
+          const hClass  = hScore !== null && aScore !== null
+                          ? hScore > aScore ? 'winner' : hScore < aScore ? 'loser' : ''
+                          : '';
+          const aClass  = hScore !== null && aScore !== null
+                          ? aScore > hScore ? 'winner' : aScore < hScore ? 'loser' : ''
+                          : '';
+
+          const homeCrest = match.homeTeam.crest || '';
+          const awayCrest = match.awayTeam.crest || '';
+
+          matchesContainer.innerHTML += `
+            <div class="match-card">
+              <div class="match-teams">
+                <div class="team-row ${hClass}">
+                  ${homeCrest ? `<img src="${homeCrest}" alt="${match.homeTeam.shortName}">` : ''}
+                  ${match.homeTeam.shortName || match.homeTeam.name}
+                </div>
+                <div class="team-row ${aClass}">
+                  ${awayCrest ? `<img src="${awayCrest}" alt="${match.awayTeam.shortName}">` : ''}
+                  ${match.awayTeam.shortName || match.awayTeam.name}
+                </div>
+              </div>
+              <div class="match-score-block">
+                <div class="score-pair">
+                  <span class="score-num">${hScore ?? '–'}</span>
+                  <span class="score-num">${aScore ?? '–'}</span>
+                </div>
+                <span class="match-status ${isLive ? 'live' : ''}">${status}</span>
+              </div>
+            </div>`;
+        });
+      });
+
+    } catch (err) {
+      matchesContainer.innerHTML = `<div class="loading" style="color:var(--muted)">⚠ Failed to load matches</div>`;
+      console.error('loadMatches error:', err);
+    }
+  }
+
+  function formatKickoff(utcDate) {
+    const d = new Date(utcDate);
+    return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Bangkok' });
+  }
+
+  /* ── News ── */
+  function loadNews() {
+    const news = [
+      { tag: 'Title Race',      title: 'Arsenal continue strong title race',      desc: 'The Gunners maintain top position with clinical performances across the pitch.' },
+      { tag: 'City',            title: 'Manchester City push hard for comeback',   desc: 'Pep Guardiola\'s side refuse to drop the pace as they chase league leaders.' },
+      { tag: 'Liverpool',       title: 'Liverpool dominate in latest fixture',     desc: 'Slot\'s Liverpool put in an impressive display, moving into Champions League spots.' },
+      { tag: 'Top Four Battle', title: 'Tottenham battle hard for top four',       desc: 'Spurs keep the pressure on as the race for European football heats up.' },
+    ];
+
+    newsContainer.innerHTML = news.map(n => `
+      <div class="news-card">
+        <div class="news-tag">${n.tag}</div>
+        <h3>${n.title}</h3>
+        <p>${n.desc}</p>
+      </div>`).join('');
+  }
+
+  /* ── Init ── */
+  loadTable();
+  loadMatches();
+  loadNews();
+</script>
 </body>
-
-</html> 
+</html>
